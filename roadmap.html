@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Netflix Clone – Dev Roadmap</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #e50914;
+      --red-dark: #b20710;
+      --bg: #0d0d0d;
+      --surface: #141414;
+      --surface2: #1c1c1c;
+      --border: #2a2a2a;
+      --text: #e5e5e5;
+      --muted: #888;
+      --done: #2ecc71;
+      --progress: #f39c12;
+      --todo: #3498db;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 80px 20px 60px;
+      background: linear-gradient(180deg, #1a0000 0%, var(--bg) 100%);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(229,9,20,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-logo {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--red);
+      text-shadow: 0 0 40px rgba(229,9,20,.5);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{text-shadow:0 0 40px rgba(229,9,20,.5)} 50%{text-shadow:0 0 80px rgba(229,9,20,.9)} }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 1rem;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .hero-desc {
+      margin-top: 18px;
+      max-width: 560px;
+      margin-inline: auto;
+      font-size: .95rem;
+      color: #aaa;
+      line-height: 1.7;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-section {
+      max-width: 860px;
+      margin: 0 auto 50px;
+      padding: 0 24px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      background: linear-gradient(90deg, var(--red-dark), var(--red));
+      border-radius: 99px;
+      transition: width 1s ease;
+    }
+
+    /* ── LEGEND ── */
+    .legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0 20px 40px;
+      font-size: .8rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-done     { background: var(--done); }
+    .dot-progress { background: var(--progress); }
+    .dot-todo     { background: var(--todo); }
+
+    /* ── TIMELINE ── */
+    .timeline {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50px;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--red) 0%, var(--border) 100%);
+    }
+
+    /* ── PHASE CARD ── */
+    .phase {
+      position: relative;
+      margin-bottom: 36px;
+      padding-left: 90px;
+      animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .phase:nth-child(1) { animation-delay:.1s }
+    .phase:nth-child(2) { animation-delay:.2s }
+    .phase:nth-child(3) { animation-delay:.3s }
+    .phase:nth-child(4) { animation-delay:.4s }
+    .phase:nth-child(5) { animation-delay:.5s }
+    .phase:nth-child(6) { animation-delay:.6s }
+
+    .phase-icon {
+      position: absolute;
+      left: 28px;
+      top: 18px;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      transition: transform .3s, box-shadow .3s;
+      z-index: 2;
+    }
+    .phase:hover .phase-icon {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(229,9,20,.4);
+      border-color: var(--red);
+    }
+
+    .phase-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+      cursor: pointer;
+    }
+    .phase-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(229,9,20,.5);
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .phase-title-group { display: flex; align-items: center; gap: 12px; }
+    .phase-num {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+    .phase-title { font-size: 1.05rem; font-weight: 700; }
+    .phase-badge {
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .badge-done     { background: rgba(46,204,113,.15); color: var(--done);     border: 1px solid rgba(46,204,113,.3); }
+    .badge-progress { background: rgba(243,156,18,.15); color: var(--progress); border: 1px solid rgba(243,156,18,.3); }
+    .badge-todo     { background: rgba(52,152,219,.15); color: var(--todo);     border: 1px solid rgba(52,152,219,.3); }
+
+    .phase-body { padding: 20px 22px; }
+
+    /* tasks */
+    .task-list { list-style: none; margin-bottom: 16px; }
+    .task-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      font-size: .88rem;
+      color: #ccc;
+    }
+    .task-list li:last-child { border-bottom: none; }
+    .task-check {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem;
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .task-check.done     { background: var(--done);     border-color: var(--done);     color: #000; }
+    .task-check.progress { background: var(--progress); border-color: var(--progress); color: #000; }
+    .task-check.todo     { border-color: var(--todo); color: var(--todo); }
+
+    /* note box */
+    .note-box {
+      background: rgba(229,9,20,.06);
+      border-left: 3px solid var(--red);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      margin-top: 6px;
+    }
+    .note-label {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--red);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .note-box p { font-size: .82rem; color: #bbb; line-height: 1.6; }
+
+    /* file tags */
+    .file-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .file-tag {
+      font-size: .72rem;
+      padding: 3px 10px;
+      border-radius: 5px;
+      background: rgba(255,255,255,.06);
+      color: #999;
+      border: 1px solid var(--border);
+      font-family: monospace;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 30px;
+      font-size: .78rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    footer span { color: var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-logo">NETFLEX</div>
+  <div class="hero-sub">Clone · Development Roadmap</div>
+  <p class="hero-desc">
+    A step-by-step plan for building your Netflix clone from scratch —
+    covering HTML structure, CSS styling, JavaScript logic, and deployment.
+  </p>
+</section>
+
+<!-- OVERALL PROGRESS -->
+<div class="progress-section">
+  <div class="progress-label">
+    <span>Overall Progress</span>
+    <span id="pct">10% complete</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="dot dot-done"></div> Done</div>
+  <div class="legend-item"><div class="dot dot-progress"></div> In Progress</div>
+  <div class="legend-item"><div class="dot dot-todo"></div> To Do</div>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline">
+
+  <!-- PHASE 1 -->
+  <div class="phase">
+    <div class="phase-icon">🏗️</div>
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title-group">
+          <span class="phase-num">Phase 01</span>
+          <span class="phase-title">Project Setup & File Structure</span>
+        </div>
+        <span class="phase-badge badge-progress">In Progress</span>
+      </div>
+      <div class="phase-body">
+        <ul class="task-list">
+          <li><div class="task-check done">✓</div> Create main.html with boilerplate</li>
+          <li><div class="task-check done">✓</div> Link src/style.css and src/index.js</li>
+          <li><div class="task-check done">✓</div> Create assets/images and assets/videos folders</li>
+          <li><div class="task-check todo">○</div> Add favicon and Open Graph meta tags</li>
+          <li><div class="task-check todo">○</div> Set up Git ignore for node_modules, DS_Store</li>
+        </ul>
+        <div class="note-box">
+          <div class="note-label">📝 Dev Note</div>
+          <p>Your <code>main.html</code> already has the CSS linked — great start! Next, add <code>&lt;script src="src/index.js" defer&gt;&lt;/script&gt;</code> before <code>&lt;/body&gt;</code> so JS loads after HTML.</p>
+        </div>
+        <div class="file-tags">
+          <span class="file-tag">main.html</span>
+          <span class="file-tag">src/style.css</span>
+          <span class="file-tag">src/index.js</span>
+          <span class="file-tag">.gitignore</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="phase-icon">🎨</div>
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title-group">
+          <span class="phase-num">Phase 02</span>
+          <span class="phase-title">CSS Design System & Global Styles</span>
+        </div>
+        <span class="phase-badge badge-todo">To Do</span>
+      </div>
+      <div class="phase-body">
+        <ul class="task-list">
+          <li><div class="task-check todo">○</div> Define CSS custom properties (colors, fonts, spacing)</li>
+          <li><div class="task-check todo">○</div> CSS reset / normalize for cross-browser consistency</li>
+          <li><div class="task-check todo">○</div> Import Netflix-style font (e.g., Bebas Neue / Inter)</li>
+          <li><div class="task-check todo">○</div> Global button, link, and image utility classes</li>
+          <li><div class="task-check todo">○</div> Mobile-first responsive breakpoints setup</li>
+        </ul>
+        <div class="note-box">
+          <div class="note-label">📝 Dev Note</div>
+          <p>Use CSS variables at the <code>:root</code> level: <code>--netflix-red: #e50914</code>, <code>--bg-dark: #141414</code>, <code>--text-light: #e5e5e5</code>. This keeps your palette consistent everywhere.</p>
+        </div>
+        <div class="file-tags">
+          <span class="file-tag">src/style.css</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase">
+    <div class="phase-icon">🧭</div>
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title-group">
+          <span class="phase-num">Phase 03</span>
+          <span class="phase-title">Navbar Component</span>
+        </div>
+        <span class="phase-badge badge-todo">To Do</span>
+      </div>
+      <div class="phase-body">
+        <ul class="task-list">
+          <li><div class="task-check todo">○</div> Build fixed top navbar with Netflix logo (SVG)</li>
+          <li><div class="task-check todo">○</div> Nav links: Home, TV Shows, Movies, New & Popular</li>
+          <li><div class="task-check todo">○</div> Right side: Search 🔍, Notifications 🔔, Avatar</li>
+          <li><div class="task-check todo">○</div> Scroll-triggered background color change (JS)</li>
+          <li><div class="task-check todo">○</div> Hamburger menu for mobile</li>
+        </ul>
+        <div class="note-box">
+          <div class="note-label">📝 Dev Note</div>
+          <p>Use <code>window.addEventListener('scroll', ...)</code> in <code>index.js</code> to toggle a <code>.scrolled</code> class on the navbar — add a dark background when user scrolls past 50px.</p>
+        </div>
+        <div class="file-tags">
+          <span class="file-tag">main.html</span>
+          <span class="file-tag">src/style.css</span>
+          <span class="file-tag">src/index.js</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase">
+    <div class="phase-icon">🎬</div>
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title-group">
+          <span class="phase-num">Phase 04</span>
+          <span class="phase-title">Hero / Banner Section</span>
+        </div>
+        <span class="phase-badge badge-todo">To Do</span>
+      </div>
+      <div class="phase-body">
+        <ul class="task-list">
+          <li><div class="task-check todo">○</div> Full-viewport hero with background image/video</li>
+          <li><div class="task-check todo">○</div> Dark gradient overlay (bottom fade)</li>
+          <li><div class="task-check todo">○</div> Featured title logo image</li>
+          <li><div class="task-check todo">○</div> Description text + Play & More Info buttons</li>
+          <li><div class="task-check todo">○</div> Maturity rating + genre tags</li>
+          <li><div class="task-check todo">○</div> Subtle ken-burns animation on background</li>
+        </ul>
+        <div class="note-box">
+          <div class="note-label">📝 Dev Note</div>
+          <p>For the gradient overlay, use: <code>background: linear-gradient(to top, #141414 0%, transparent 60%, #141414 100%)</code> on a pseudo-element over the hero image. This is exactly what Netflix does.</p>
+        </div>
+        <div class="file-tags">
+          <span class="file-tag">main.html</span>
+          <span class="file-tag">src/style.css</span>
+          <span class="file-tag">assets/images/</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase">
+    <div class="phase-icon">🎞️</div>
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title-group">
+          <span class="phase-num">Phase 05</span>
+          <span class="phase-title">Movie Rows & Carousel Sliders</span>
+        </div>
+        <span class="phase-badge badge-todo">To Do</span>
+      </div>
+      <div class="phase-body">
+        <ul class="task-list">
+          <li><div class="task-check todo">○</div> Row component: "Trending Now", "Top 10", "Continue Watching"</li>
+          <li><div class="task-check todo">○</div> Horizontal scroll with hidden scrollbar</li>
+          <li><div class="task-check todo">○</div> Left / Right arrow navigation buttons</li>
+          <li><div class="task-check todo">○</div> Movie card with thumbnail, hover scale & info overlay</li>
+          <li><div class="task-check todo">○</div> Hover card: title, year, rating, genre, Play button</li>
+          <li><div class="task-check todo">○</div> Fetch movie data from TMDB API (optional)</li>
+        </ul>
+        <div class="note-box">
+          <div class="note-label">📝 Dev Note</div>
+          <p>For horizontal scroll without scrollbar: <code>overflow-x: scroll; scrollbar-width: none;</code> then use <code>element.scrollLeft += 300</code> in JS for the arrow buttons. Add <code>scroll-behavior: smooth</code> for a nice effect.</p>
+        </div>
+        <div class="file-tags">
+          <span class="file-tag">main.html</span>
+          <span class="file-tag">src/style.css</span>
+          <span class="file-tag">src/index.js</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 6 -->
+  <div class="phase">
+    <div class="phase-icon">🚀</div>
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title-group">
+          <span class="phase-num">Phase 06</span>
+          <span class="phase-title">Polish, Footer & Deployment</span>
+        </div>
+        <span class="phase-badge badge-todo">To Do</span>
+      </div>
+      <div class="phase-body">
+        <ul class="task-list">
+          <li><div class="task-check todo">○</div> Footer with Netflix-style links grid</li>
+          <li><div class="task-check todo">○</div> Responsive test on mobile (360px) and tablet (768px)</li>
+          <li><div class="task-check todo">○</div> Lazy loading images with <code>loading="lazy"</code></li>
+          <li><div class="task-check todo">○</div> Add smooth scroll and page entrance animations</li>
+          <li><div class="task-check todo">○</div> Push to GitHub Pages or Netlify</li>
+          <li><div class="task-check todo">○</div> Update README with live link and screenshots</li>
+        </ul>
+        <div class="note-box">
+          <div class="note-label">📝 Dev Note</div>
+          <p>To deploy on GitHub Pages: go to repo Settings → Pages → Source → select <code>main</code> branch and <code>/ (root)</code>. Your site will be live at <code>username.github.io/netflix_clone</code>. Rename <code>main.html</code> → <code>index.html</code> first!</p>
+        </div>
+        <div class="file-tags">
+          <span class="file-tag">main.html → index.html</span>
+          <span class="file-tag">README.md</span>
+          <span class="file-tag">GitHub Pages</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /timeline -->
+
+<footer>
+  Built with ❤️ — <span>Netflix Clone</span> Dev Roadmap · Shivam · 2026
+</footer>
+
+<script>
+  // Animate progress bar on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('fill').style.width = '10%';
+    }, 300);
+  });
+
+  // Clickable task checks (toggle)
+  document.querySelectorAll('.task-check').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('done')) {
+        btn.classList.replace('done', 'todo');
+        btn.textContent = '○';
+      } else if (btn.classList.contains('progress')) {
+        btn.classList.replace('progress', 'done');
+        btn.textContent = '✓';
+      } else {
+        btn.classList.replace('todo', 'done');
+        btn.textContent = '✓';
+      }
+      updateProgress();
+    });
+  });
+
+  function updateProgress() {
+    const all  = document.querySelectorAll('.task-check').length;
+    const done = document.querySelectorAll('.task-check.done').length;
+    const pct  = Math.round((done / all) * 100);
+    document.getElementById('fill').style.width = pct + '%';
+    document.getElementById('pct').textContent  = pct + '% complete';
+  }
+</script>
+</body>
+</html>
